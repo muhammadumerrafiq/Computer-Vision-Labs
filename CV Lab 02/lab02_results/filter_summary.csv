@@ -1,0 +1,7 @@
+Filter,Mean Accuracy,Std Accuracy,Mean Macro-F1,Std Macro-F1
+No Filter,67.19,0.0,61.88,2.1
+Average,67.71,2.66,61.16,4.01
+Gaussian,65.62,1.28,60.2,1.92
+Median,66.67,1.47,60.52,1.26
+Sharpening,67.19,4.6,61.01,4.67
+Sobel,58.85,1.47,55.97,3.56

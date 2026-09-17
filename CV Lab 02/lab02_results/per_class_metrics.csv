@@ -1,0 +1,73 @@
+Model,Filter,Class,Precision,Recall,F1,Support
+ResNet50,No Filter,BCC,92.86,81.25,86.67,16
+ResNet50,No Filter,MEL,100.0,6.25,11.76,16
+ResNet50,No Filter,NV,63.64,87.5,73.68,16
+ResNet50,No Filter,PBK,55.56,93.75,69.77,16
+AlexNet,No Filter,BCC,84.62,68.75,75.86,16
+AlexNet,No Filter,MEL,80.0,25.0,38.1,16
+AlexNet,No Filter,NV,51.72,93.75,66.67,16
+AlexNet,No Filter,PBK,76.47,81.25,78.79,16
+ResNet101,No Filter,BCC,88.24,93.75,90.91,16
+ResNet101,No Filter,MEL,100.0,6.25,11.76,16
+ResNet101,No Filter,NV,61.9,81.25,70.27,16
+ResNet101,No Filter,PBK,56.0,87.5,68.29,16
+ResNet50,Average,BCC,87.5,87.5,87.5,16
+ResNet50,Average,MEL,100.0,18.75,31.58,16
+ResNet50,Average,NV,61.9,81.25,70.27,16
+ResNet50,Average,PBK,58.33,87.5,70.0,16
+AlexNet,Average,BCC,86.67,81.25,83.87,16
+AlexNet,Average,MEL,0.0,0.0,0.0,16
+AlexNet,Average,NV,53.85,87.5,66.67,16
+AlexNet,Average,PBK,60.87,87.5,71.79,16
+ResNet101,Average,BCC,93.33,87.5,90.32,16
+ResNet101,Average,MEL,100.0,6.25,11.76,16
+ResNet101,Average,NV,60.0,93.75,73.17,16
+ResNet101,Average,PBK,65.22,93.75,76.92,16
+ResNet50,Gaussian,BCC,82.35,87.5,84.85,16
+ResNet50,Gaussian,MEL,100.0,12.5,22.22,16
+ResNet50,Gaussian,NV,63.64,87.5,73.68,16
+ResNet50,Gaussian,PBK,56.52,81.25,66.67,16
+AlexNet,Gaussian,BCC,86.67,81.25,83.87,16
+AlexNet,Gaussian,MEL,100.0,12.5,22.22,16
+AlexNet,Gaussian,NV,48.39,93.75,63.83,16
+AlexNet,Gaussian,PBK,75.0,75.0,75.0,16
+ResNet101,Gaussian,BCC,82.35,87.5,84.85,16
+ResNet101,Gaussian,MEL,100.0,6.25,11.76,16
+ResNet101,Gaussian,NV,59.09,81.25,68.42,16
+ResNet101,Gaussian,PBK,54.17,81.25,65.0,16
+ResNet50,Median,BCC,83.33,93.75,88.24,16
+ResNet50,Median,MEL,100.0,6.25,11.76,16
+ResNet50,Median,NV,65.0,81.25,72.22,16
+ResNet50,Median,PBK,52.0,81.25,63.41,16
+AlexNet,Median,BCC,84.62,68.75,75.86,16
+AlexNet,Median,MEL,100.0,12.5,22.22,16
+AlexNet,Median,NV,51.61,100.0,68.09,16
+AlexNet,Median,PBK,72.22,81.25,76.47,16
+ResNet101,Median,BCC,100.0,87.5,93.33,16
+ResNet101,Median,MEL,100.0,6.25,11.76,16
+ResNet101,Median,NV,59.09,81.25,68.42,16
+ResNet101,Median,PBK,59.26,100.0,74.42,16
+ResNet50,Sharpening,BCC,93.75,93.75,93.75,16
+ResNet50,Sharpening,MEL,100.0,12.5,22.22,16
+ResNet50,Sharpening,NV,60.87,87.5,71.79,16
+ResNet50,Sharpening,PBK,65.22,93.75,76.92,16
+AlexNet,Sharpening,BCC,83.33,62.5,71.43,16
+AlexNet,Sharpening,MEL,50.0,6.25,11.11,16
+AlexNet,Sharpening,NV,51.72,93.75,66.67,16
+AlexNet,Sharpening,PBK,61.9,81.25,70.27,16
+ResNet101,Sharpening,BCC,100.0,87.5,93.33,16
+ResNet101,Sharpening,MEL,100.0,6.25,11.76,16
+ResNet101,Sharpening,NV,59.09,81.25,68.42,16
+ResNet101,Sharpening,PBK,59.26,100.0,74.42,16
+ResNet50,Sobel,BCC,84.62,68.75,75.86,16
+ResNet50,Sobel,MEL,50.0,31.25,38.46,16
+ResNet50,Sobel,NV,56.0,87.5,68.29,16
+ResNet50,Sobel,PBK,56.25,56.25,56.25,16
+AlexNet,Sobel,BCC,85.71,75.0,80.0,16
+AlexNet,Sobel,MEL,0.0,0.0,0.0,16
+AlexNet,Sobel,NV,50.0,100.0,66.67,16
+AlexNet,Sobel,PBK,60.0,56.25,58.06,16
+ResNet101,Sobel,BCC,81.82,56.25,66.67,16
+ResNet101,Sobel,MEL,62.5,31.25,41.67,16
+ResNet101,Sobel,NV,59.09,81.25,68.42,16
+ResNet101,Sobel,PBK,43.48,62.5,51.28,16
