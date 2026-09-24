@@ -1,0 +1,1 @@
+{"batch": 64, "cnn": {"CNN Model 1": "ResNet50", "CNN Model 2": "AlexNet"}, "drop": 0.3, "edge": "Canny (30/100, 5x5)", "epochs": 12, "filter": "Sharpening", "img": 224, "lr": [0.0001, 0.001], "ls": 0.05, "wd": 0.0001}
