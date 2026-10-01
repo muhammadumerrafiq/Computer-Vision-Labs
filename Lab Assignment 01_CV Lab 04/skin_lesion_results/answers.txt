@@ -1,0 +1,18 @@
+Q1. Why is Gaussian filtering applied before Canny detection?
+Gaussian filtering is applied before Canny because Canny's gradient step reacts to any sharp intensity change, including the fine-grained noise and faint skin texture that HAM10000 photos contain, not just the lesion boundary. Smoothing those small fluctuations first means the gradient computed afterwards is dominated by the real edge between the lesion and the surrounding skin. This is visible in the comparison table: Canny methods average an F1 of 0.34 against added noise versus 0.67 for Sobel, and within the Canny rows, no filtering at all ('Original + Canny') is consistently the weakest of the four preprocessing choices.
+
+Q2. How did the three Canny threshold settings affect the result?
+Across the five Task 1-6 images, the three threshold pairs did not agree on a single best setting ({'50/100': 5}). Looking at the per-threshold averages, the 50/100 pair kept 63% of its edge pixels on a few long, continuous curves on average, against 0% for the 150/250 pair, and the largest contour it found covered 0.1% of the image on average versus 0.0% for the weaker pair. In practice this meant that moving between the three thresholds traded off how much of the lesion outline survived against how much hair and skin-texture noise came along with it.
+
+Q3. Which threshold produced the best lesion boundary?
+The 50/100 pair was selected most often (5 of 5 images), because it was the pair that most consistently produced a single, closed, dominant contour of plausible lesion size once small gaps were closed (edge coherence 0.63, boundary-detection success rate 0% on these five images), which was not true of every threshold on every image.
+
+Q4. Why are edges useful for detecting skin lesions?
+A skin lesion is usually a different colour and texture from the surrounding healthy skin, which shows up as a ring of high intensity gradient at the boundary between the two regions. Edge detection turns that gradient ring into an explicit curve, which is what makes it possible to measure the lesion's area and perimeter directly, rather than only estimating lesion size by eye.
+
+Q5. What problems did you observe in detecting the lesion boundary?
+The two recurring problems were hair and low contrast. Several HAM10000 images contain dark hair strands crossing the lesion, and these produce their own strong edges that get picked up alongside the real boundary, fragmenting the detected contour into more than one piece. The second problem is low contrast between the lesion and the surrounding skin in some images (particularly lighter nevi), which is part of why 'Boundary Detection' in the final table never reaches a perfect score (best combination: Average + Sobel, success rate 76%).
+
+Q6. How could your method be improved?
+A dedicated hair-removal step before Canny (e.g. a black-hat morphological filter followed by inpainting, which is the standard approach in dermoscopy preprocessing) would likely reduce the fragmentation caused by hair. For low-contrast images, colour information could be brought in instead of relying on grayscale intensity alone, since the lesion and skin often differ more in hue/saturation than in brightness. Finally, trying a small range of thresholds per image (as Task 4 does) rather than a single fixed pair for the whole dataset would keep the boundary-detection success rate higher.
+

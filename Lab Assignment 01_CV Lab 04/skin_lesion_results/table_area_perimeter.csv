@@ -1,0 +1,6 @@
+Image,Best Filter,Edge Method,Area (pixels),Perimeter (pixels)
+Image 1 (ISIC_0025438),Gaussian,Canny (50/100),19,19.1
+Image 2 (ISIC_0028847),Median,Canny (50/100),133,84.2
+Image 3 (ISIC_0028750),Average,Canny (50/100),132,107.1
+Image 4 (ISIC_0031597),Average,Canny (50/100),376,95.3
+Image 5 (ISIC_0024646),Average,Canny (50/100),40,24.5

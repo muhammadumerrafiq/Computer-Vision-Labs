@@ -1,0 +1,9 @@
+Method,Noise Handling,_noise,Edge Quality,_quality,Boundary Detection,_boundary,Overall Performance
+Original + Sobel,Fair,0.609,Fair,0.508,Fair,0.476,Fair
+Original + Canny,Poor,0.174,Fair,0.448,Poor,0.286,Poor
+Average + Sobel,Good,0.729,Fair,0.556,Good,0.762,Fair
+Average + Canny,Poor,0.377,Fair,0.419,Poor,0.048,Poor
+Gaussian + Sobel,Good,0.673,Fair,0.524,Good,0.667,Fair
+Gaussian + Canny,Poor,0.357,Fair,0.478,Poor,0.095,Poor
+Median + Sobel,Good,0.669,Fair,0.523,Good,0.714,Fair
+Median + Canny,Fair,0.438,Fair,0.571,Poor,0.143,Poor

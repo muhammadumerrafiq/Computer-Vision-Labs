@@ -1,0 +1,16 @@
+Image,Class,Threshold,Edge coherence,Largest contour (% of image),Boundary found,Score,Selected
+ISIC_0025438,nv,50/100,1.0,0.01,False,1.0,True
+ISIC_0025438,nv,100/200,0.0,0.0,False,0.0,False
+ISIC_0025438,nv,150/250,0.0,0.0,False,0.0,False
+ISIC_0028847,mel,50/100,0.43,0.05,False,0.43,True
+ISIC_0028847,mel,100/200,0.0,0.0,False,0.0,False
+ISIC_0028847,mel,150/250,0.0,0.0,False,0.0,False
+ISIC_0028750,bkl,50/100,0.2,0.05,False,0.2,True
+ISIC_0028750,bkl,100/200,0.0,0.0,False,0.0,False
+ISIC_0028750,bkl,150/250,0.0,0.0,False,0.0,False
+ISIC_0031597,bcc,50/100,0.525,0.14,False,0.525,True
+ISIC_0031597,bcc,100/200,0.0,0.0,False,0.0,False
+ISIC_0031597,bcc,150/250,0.0,0.0,False,0.0,False
+ISIC_0024646,akiec,50/100,1.0,0.01,False,1.0,True
+ISIC_0024646,akiec,100/200,1.0,0.01,False,1.0,False
+ISIC_0024646,akiec,150/250,0.0,0.0,False,0.0,False
