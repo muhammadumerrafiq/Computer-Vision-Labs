@@ -6,7 +6,7 @@
 [![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-5C3EE8.svg)](https://opencv.org/)
 [![Jupyter](https://img.shields.io/badge/Jupyter-Notebooks-F37626.svg)](https://jupyter.org/)
 
-A comprehensive collection of practical laboratory experiments, benchmarks, and assignments for **Introduction to Computer Vision (7th Semester)**. This repository explores classical image processing pipelines, spatial filtering, edge detection, mathematical morphology, and deep Convolutional Neural Networks (CNNs) benchmarked on real-world dermoscopic medical imaging datasets (ISIC and HAM10000).
+A comprehensive collection of practical laboratory experiments, benchmarks, and assignments for **Introduction to Computer Vision (7th Semester)**. This repository explores classical image processing pipelines, spatial filtering, edge detection, mathematical morphology, deep Convolutional Neural Networks (CNNs) benchmarked on dermoscopic medical imaging datasets (ISIC and HAM10000), and feature-descriptor-based industrial defect detection pipelines (HOG + Kernel SVM) with real-time web deployment.
 
 ---
 
@@ -18,7 +18,10 @@ A comprehensive collection of practical laboratory experiments, benchmarks, and 
   - [Lab 02: Spatial Filtering & Feature Enhancement](#lab-02-spatial-filtering--feature-enhancement)
   - [Lab 03: Edge Detection, Noise Sensitivity & Edge Representations](#lab-03-edge-detection-noise-sensitivity--edge-representations)
   - [Lab Assignment 01 (Lab 04): Skin Lesion Boundary Detection & Morphometry](#lab-assignment-01-lab-04-skin-lesion-boundary-detection--morphometry)
+  - [Lab 05: Industrial Defect Detection using HOG & Kernel SVM](#lab-05-industrial-defect-detection-using-hog--kernel-svm)
 - [Key Empirical Results](#-key-empirical-results)
+  - [Filter Benchmark Summary (Lab 02)](#filter-benchmark-summary-lab-02--test-set)
+  - [Classifier Benchmark Summary (Lab 05)](#classifier-benchmark-summary-lab-05--industrial-defect-detection)
 - [Tech Stack & Dependencies](#-tech-stack--dependencies)
 - [Getting Started](#-getting-started)
 - [Author & Academic Info](#-author--academic-info)
@@ -49,6 +52,19 @@ Computer-Vision-Labs/
 │   ├── Skin_Lesion_Boundary_Detection.ipynb   # Boundary extraction & morphology
 │   ├── Skin_Lesion_Boundary_Detection.md      # Quantitative morphometrics & answers
 │   └── skin_lesion_results/                   # Visualizations and area/perimeter logs
+│
+├── CV Lab 05/
+│   ├── HOG_Defect_Detection.ipynb  # End-to-end HOG pipeline, sweeps & classifier benchmarks
+│   ├── Lab_Report.docx             # Formal academic lab report and analysis
+│   ├── Outputs/                    # Heatmaps, confusion matrices, and CSV evaluation benchmarks
+│   └── Bonus Task/                 # Real-time HOG industrial quality inspection prototype (Flask web app)
+│       ├── app.py                  # Flask inspection server with webcam, video & image routes
+│       ├── predictor.py            # Sliding window HOG inference & bounding box visualizer
+│       ├── hog_utils.py            # HOG feature descriptor extraction & visualization helpers
+│       ├── hog_defect_model.joblib # Pre-trained Kernel SVM (RBF) industrial defect model
+│       ├── templates/ & static/    # Modern dark-mode UI with real-time inspection indicators
+│       ├── sample_images/          # Normal & defective steel samples and conveyor belt test video
+│       └── requirements.txt        # Bonus app dependencies
 │
 ├── LICENSE                         # MIT License
 └── README.md                       # Repository documentation
@@ -107,6 +123,21 @@ Computer-Vision-Labs/
 
 ---
 
+### Lab 05: Industrial Defect Detection using HOG & Kernel SVM
+- **Objective:** Detect manufacturing surface defects on steel sheets (hot-rolled plates) using **Histogram of Oriented Gradients (HOG)** feature extraction and machine learning classifiers.
+- **Key Components & Experiments:**
+  - **HOG Parameter Optimization:** Systematic parameter sweep evaluating cell sizes ($4\times4$, $8\times8$, $16\times16$), orientations ($6, 9, 12$), and block sizes ($1\times1$, $2\times2$, $3\times3$) with L2-Hys normalization. The optimal configuration ($8\times8$ cells, 9 bins, $2\times2$ blocks, $128\times128$ window) yields an 8,100-dimensional descriptor.
+  - **Classifier Benchmarking:** Comparative analysis of **Kernel SVM (RBF)**, **Linear SVM**, **Random Forest**, **k-NN**, and **XGBoost**. Kernel SVM achieved top performance with **77.74% Accuracy** and **81.95% F1-Score** in binary defect classification, and **83.89% Macro-Accuracy** in multi-class defect categorization across 6 classes (*Crazing, Inclusion, Patches, Pitted Surface, Rolled-in Scale, Scratches*).
+  - **Sliding-Window Industrial Decision Module:** Full-image surface scanning with $64\times64$ windows (stride 32px), local patch classification, and thresholded spatial anomaly aggregation to automate **ACCEPT (PASS)** or **REJECT (DEFECTIVE)** decisions.
+  - **Robustness & Perturbation Analysis:** Stress testing under synthetic noise, contrast shifts, and spatial rotations to evaluate descriptor stability under production floor lighting variations.
+- **Bonus Challenge Prototype (Real-Time Deployment):**
+  - Interactive Flask web application simulating industrial quality control.
+  - **Single & Batch Image Inspection:** Upload or select sample steel plates with automatic bounding box localization around detected defect patches.
+  - **Video Stream Inspection:** Frame-by-frame analysis of simulated conveyor belt footage with defect rate counters and rejection logs.
+  - **Live Webcam Inspection:** Real-time $200\times200$ ROI video stream extraction displaying dynamic PASS/DEFECTIVE status and confidence scoring.
+
+---
+
 ## 📊 Key Empirical Results
 
 ### Filter Benchmark Summary (Lab 02 — Test Set)
@@ -121,17 +152,28 @@ Computer-Vision-Labs/
 | ResNet101 | Sharpening | 68.75 | 79.59 | 68.75 | 61.98 | 91.96 |
 | AlexNet | Baseline (Raw) | 67.19 | 73.20 | 67.19 | 64.85 | 90.20 |
 
+### Classifier Benchmark Summary (Lab 05 — Industrial Defect Detection)
+
+| Model | Accuracy (%) | Precision (%) | Recall (%) | F1-Score (%) | Latency (ms/sample) |
+| :--- | :---: | :---: | :---: | :---: | :---: |
+| **HOG + SVM (RBF)** | **77.74** | **80.43** | **83.52** | **81.95** | **0.14 ms** |
+| HOG + XGBoost (GPU) | 76.39 | 79.71 | 81.78 | 80.73 | 0.12 ms |
+| HOG + Random Forest | 75.79 | 75.85 | 87.98 | 81.47 | 0.24 ms |
+| HOG + SVM (Linear) | 71.06 | 77.95 | 72.74 | 75.26 | 0.13 ms |
+| HOG + kNN ($k=5$) | 51.57 | 90.05 | 22.43 | 35.91 | 1.07 ms |
+
 ---
 
 ## 🛠️ Tech Stack & Dependencies
 
-The experiments in this repository utilize standard scientific Python libraries and deep learning frameworks:
+The experiments in this repository utilize standard scientific Python libraries, machine learning algorithms, and deep learning frameworks:
 
 - **Language:** Python 3.10+
 - **Deep Learning:** PyTorch, Torchvision
-- **Computer Vision & Image Processing:** OpenCV (`cv2`), Albumentations, scikit-image, PIL
-- **Machine Learning & Evaluation:** scikit-learn
+- **Computer Vision & Image Processing:** OpenCV (`cv2`), scikit-image, Albumentations, PIL
+- **Machine Learning & Evaluation:** scikit-learn, XGBoost, Joblib
 - **Data & Visualization:** NumPy, Pandas, Matplotlib, Seaborn
+- **Web Prototype (Bonus):** Flask, HTML5, Vanilla CSS, JavaScript
 - **Environment:** Jupyter Notebook / Google Colab
 
 ---
@@ -157,14 +199,22 @@ source venv/bin/activate
 
 ### 3. Install Dependencies
 ```bash
-pip install torch torchvision opencv-python numpy pandas matplotlib seaborn scikit-learn scikit-image jupyter
+pip install torch torchvision opencv-python numpy pandas matplotlib seaborn scikit-learn scikit-image xgboost joblib flask jupyter
 ```
 
 ### 4. Launch Jupyter Notebooks
 ```bash
 jupyter notebook
 ```
-Navigate to any lab folder (`CV Lab 01`, `CV Lab 02`, `CV Lab 03`, or `Lab Assignment 01_CV Lab 04`) and execute the respective `.ipynb` notebook.
+Navigate to any lab folder (`CV Lab 01`, `CV Lab 02`, `CV Lab 03`, `Lab Assignment 01_CV Lab 04`, or `CV Lab 05`) and execute the respective `.ipynb` notebook.
+
+### 5. Run the Real-Time Quality Inspection Prototype (Lab 05 Bonus)
+```bash
+cd "CV Lab 05/Bonus Task"
+pip install -r requirements.txt
+python app.py
+```
+Open your web browser at `http://127.0.0.1:5000` to interact with the image inspection, conveyor belt video stream, and live webcam inspection modules.
 
 ---
 
