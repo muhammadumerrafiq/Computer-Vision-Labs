@@ -46,15 +46,28 @@ The model uses the pre-trained weights from `hog_defect_model.joblib` and featur
 
 ---
 
-## 4. Installation
+## 4. Installation & Git LFS Setup
 
-Clone or open the project folder in your terminal:
+From the repository root, navigate to the Bonus Task directory:
 
 ```bash
-cd "HOG Defect Detection"
+cd "CV Lab 05/Bonus Task"
 ```
 
-Install the dependencies:
+### Git LFS Setup (Model Download)
+
+This repository uses **Git LFS** for the large model file (`hog_defect_model.joblib`, ~183 MB). Make sure Git LFS is initialized and pull the model weights:
+
+```bash
+git lfs install
+git lfs pull
+```
+
+> **Important:** Running `git lfs pull` is required so that the actual `hog_defect_model.joblib` model file is downloaded instead of only the Git LFS pointer.
+
+### Install Dependencies
+
+Install the Python dependencies:
 
 ```bash
 pip install -r requirements.txt

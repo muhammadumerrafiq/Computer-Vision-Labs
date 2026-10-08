@@ -186,7 +186,15 @@ git clone https://github.com/muhammadumerrafiq/Computer-Vision-Labs.git
 cd Computer-Vision-Labs
 ```
 
-### 2. Set Up a Virtual Environment
+### 2. Git LFS Setup (Download Model Weights)
+This repository uses **Git LFS** for the large model file (`hog_defect_model.joblib`, ~183 MB) in Lab 05. Run:
+```bash
+git lfs install
+git lfs pull
+```
+This is required so the actual `hog_defect_model.joblib` model binary is downloaded instead of only the Git LFS pointer.
+
+### 3. Set Up a Virtual Environment
 ```bash
 # Windows (PowerShell)
 python -m venv venv
@@ -197,18 +205,18 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 3. Install Dependencies
+### 4. Install Dependencies
 ```bash
 pip install torch torchvision opencv-python numpy pandas matplotlib seaborn scikit-learn scikit-image xgboost joblib flask jupyter
 ```
 
-### 4. Launch Jupyter Notebooks
+### 5. Launch Jupyter Notebooks
 ```bash
 jupyter notebook
 ```
 Navigate to any lab folder (`CV Lab 01`, `CV Lab 02`, `CV Lab 03`, `Lab Assignment 01_CV Lab 04`, or `CV Lab 05`) and execute the respective `.ipynb` notebook.
 
-### 5. Run the Real-Time Quality Inspection Prototype (Lab 05 Bonus)
+### 6. Run the Real-Time Quality Inspection Prototype (Lab 05 Bonus)
 ```bash
 cd "CV Lab 05/Bonus Task"
 pip install -r requirements.txt
