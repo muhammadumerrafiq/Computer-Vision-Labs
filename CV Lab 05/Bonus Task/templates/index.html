@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HOG Industrial Defect Detection | Real-Time Quality Inspection</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Top Navigation Header -->
+    <header class="app-header">
+        <div class="header-container">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+                        <polyline points="2 17 12 22 22 17"></polyline>
+                        <polyline points="2 12 12 17 22 12"></polyline>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="app-title">HOG Industrial Defect Detection</h1>
+                    <p class="app-subtitle">Real-Time HOG-Based Industrial Quality Inspection</p>
+                </div>
+            </div>
+
+            <!-- Model Spec Badges -->
+            <div class="header-badges">
+                <div class="spec-pill">
+                    <span class="pill-label">MODEL</span>
+                    <span class="pill-val">Kernel SVM (RBF, C=10)</span>
+                </div>
+                <div class="spec-pill">
+                    <span class="pill-label">HOG DESCRIPTOR</span>
+                    <span class="pill-val">Cell: 8x8 | 9 Bins | 8,100 Feats</span>
+                </div>
+                <div class="spec-pill status-ready">
+                    <span class="dot"></span>
+                    <span class="pill-val">PIPELINE ONLINE</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mode Navigation Bar -->
+        <nav class="mode-nav">
+            <button class="nav-btn active" id="tabBtnImage" onclick="switchMode('image')">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                    <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                Image Inspection
+            </button>
+            <button class="nav-btn" id="tabBtnVideo" onclick="switchMode('video')">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="23 7 16 12 23 17 23 7"></polygon>
+                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
+                </svg>
+                Video Inspection
+            </button>
+            <button class="nav-btn" id="tabBtnWebcam" onclick="switchMode('webcam')">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <line x1="12" y1="2" x2="12" y2="4"></line>
+                </svg>
+                Live Webcam Inspection
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-container">
+        <!-- MODE 1: IMAGE INSPECTION -->
+        <section id="modeImage" class="mode-section active">
+            <div class="section-layout">
+                <!-- Left: Controls & Upload -->
+                <div class="control-panel">
+                    <div class="panel-header">
+                        <h2>Image Input & Samples</h2>
+                        <span class="badge">JPG / PNG / WEBP</span>
+                    </div>
+
+                    <!-- Drag & Drop Upload Zone -->
+                    <div class="upload-dropzone" id="imageDropzone">
+                        <input type="file" id="imageFileInput" accept=".jpg,.jpeg,.png,.webp" style="display:none">
+                        <div class="dropzone-content">
+                            <div class="upload-icon">
+                                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                </svg>
+                            </div>
+                            <p class="dropzone-text"><strong>Click to Upload</strong> or drag steel surface image here</p>
+                            <p class="dropzone-sub">Supports: JPG, JPEG, PNG, WEBP (Any unseen image supported)</p>
+                            <button class="btn btn-primary" onclick="document.getElementById('imageFileInput').click()">Browse Image File</button>
+                        </div>
+                    </div>
+
+                    <!-- Preset Samples Quick-Test -->
+                    <div class="samples-selector">
+                        <label class="section-label">Quick Test with Industrial Samples:</label>
+                        <div class="sample-chip-grid">
+                            <button class="sample-chip pass" onclick="loadSampleImage('pass_steel.jpg', false)">
+                                <span class="chip-status">PASS</span>
+                                <span class="chip-title">Normal Steel Surface</span>
+                            </button>
+                            <button class="sample-chip defect" onclick="loadSampleImage('defect_scratch.jpg', false)">
+                                <span class="chip-status">DEFECT</span>
+                                <span class="chip-title">Scratch Defect</span>
+                            </button>
+                            <button class="sample-chip defect" onclick="loadSampleImage('defect_patch.jpg', false)">
+                                <span class="chip-status">DEFECT</span>
+                                <span class="chip-title">Oxidation Patch Defect</span>
+                            </button>
+                            <button class="sample-chip unseen" onclick="loadSampleImage('unseen_surface.jpg', true)">
+                                <span class="chip-status">UNSEEN</span>
+                                <span class="chip-title">Unseen Out-of-Distribution</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Pipeline Specs Summary Card -->
+                    <div class="pipeline-card">
+                        <h3>Industrial QC Pipeline Parameters</h3>
+                        <ul class="spec-list">
+                            <li><span>Sliding Window:</span> <strong>64×64 patch (stride 32px)</strong></li>
+                            <li><span>HOG Feature Size:</span> <strong>128×128 (8,100 dimensions)</strong></li>
+                            <li><span>Decision Rule:</span> <strong>Defect if &ge; 2 windows with P &ge; 0.50</strong></li>
+                            <li><span>Target Domain:</span> <strong>NEU Hot/Cold-Rolled Steel Strips</strong></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Right: Visual Inspection Result -->
+                <div class="results-panel">
+                    <div class="panel-header">
+                        <h2>PRODUCT INSPECTION RESULT</h2>
+                        <span id="unseenBadge" class="unseen-tag" style="display:none">Unseen Image Test</span>
+                    </div>
+
+                    <!-- Result Hero Banner -->
+                    <div class="decision-banner idle" id="imageDecisionBanner">
+                        <div class="decision-left">
+                            <span class="decision-sub">PREDICTION</span>
+                            <div class="decision-text" id="imagePredictionText">AWAITING INSPECTION</div>
+                            <div class="decision-action" id="imageActionText">PLEASE UPLOAD OR SELECT AN IMAGE</div>
+                        </div>
+                        <div class="decision-right">
+                            <div class="metric-block">
+                                <span class="metric-label">CONFIDENCE</span>
+                                <span class="metric-val" id="imageConfidenceVal">--%</span>
+                            </div>
+                            <div class="metric-block">
+                                <span class="metric-label">DEFECTIVE WINDOWS</span>
+                                <span class="metric-val" id="imageDefectiveWindowsVal">-- / --</span>
+                            </div>
+                            <div class="metric-block">
+                                <span class="metric-label">INFERENCE TIME</span>
+                                <span class="metric-val" id="imageLatencyVal">-- ms</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Image Display Area: Side-by-Side View -->
+                    <div class="inspection-display-grid">
+                        <div class="display-box">
+                            <div class="display-title">Original Input Image</div>
+                            <div class="image-wrapper" id="origImageWrapper">
+                                <div class="placeholder-msg">No image loaded yet</div>
+                                <img id="origImage" style="display:none;" alt="Original Input">
+                            </div>
+                        </div>
+                        <div class="display-box">
+                            <div class="display-title">
+                                Defective-Region Visualization
+                                <span class="box-legend"><span class="legend-box red"></span> Defective Window</span>
+                            </div>
+                            <div class="image-wrapper" id="annotatedImageWrapper">
+                                <div class="placeholder-msg">Run inspection to view localized defects</div>
+                                <img id="annotatedImage" style="display:none;" alt="Annotated Detection">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Bar -->
+                    <div class="inspection-action-bar">
+                        <button class="btn btn-action" id="btnRunImageInspection" onclick="executeImageInspection()" disabled>
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                            Run Quality Inspection
+                        </button>
+                        <span id="imageProcessingSpinner" class="spinner" style="display:none;"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODE 2: VIDEO INSPECTION -->
+        <section id="modeVideo" class="mode-section">
+            <div class="section-layout">
+                <!-- Left: Video Controls -->
+                <div class="control-panel">
+                    <div class="panel-header">
+                        <h2>Video Stream Input</h2>
+                        <span class="badge">MP4 / AVI / MOV / MKV</span>
+                    </div>
+
+                    <div class="upload-dropzone" id="videoDropzone">
+                        <input type="file" id="videoFileInput" accept=".mp4,.avi,.mov,.mkv" style="display:none">
+                        <div class="dropzone-content">
+                            <div class="upload-icon">
+                                <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M15 10l5-5v14l-5-5"></path>
+                                    <rect x="2" y="6" width="13" height="12" rx="2"></rect>
+                                </svg>
+                            </div>
+                            <p class="dropzone-text"><strong>Click to Upload Video</strong> or drag conveyor clip</p>
+                            <p class="dropzone-sub">Inspects moving industrial steel stream frame-by-frame</p>
+                            <button class="btn btn-primary" onclick="document.getElementById('videoFileInput').click()">Browse Video File</button>
+                        </div>
+                    </div>
+
+                    <!-- Preset Sample Video -->
+                    <div class="samples-selector">
+                        <label class="section-label">Quick Test Conveyor Stream:</label>
+                        <button class="sample-chip video-chip" onclick="loadSampleVideo('sample_conveyor.mp4')">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                            Conveyor Belt Stream (Mixed PASS & DEFECT)
+                        </button>
+                    </div>
+
+                    <!-- Video Processing Progress -->
+                    <div class="video-progress-card" id="videoProgressArea" style="display:none;">
+                        <div class="progress-info">
+                            <span id="videoStatusMsg">Processing frames...</span>
+                            <span id="videoProgressPct">0%</span>
+                        </div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="videoProgressBar"></div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-action" id="btnRunVideoInspection" onclick="executeVideoInspection()" disabled>
+                        Start Frame-by-Frame Inspection
+                    </button>
+                </div>
+
+                <!-- Right: Video Stream Results -->
+                <div class="results-panel">
+                    <div class="panel-header">
+                        <h2>VIDEO INSPECTION SUMMARY</h2>
+                        <span class="live-tag" id="videoLiveBadge" style="display:none;">INSPECTION COMPLETE</span>
+                    </div>
+
+                    <!-- Video Hero Decision Banner -->
+                    <div class="decision-banner idle" id="videoDecisionBanner">
+                        <div class="decision-left">
+                            <span class="decision-sub">OVERALL INSPECTION RESULT</span>
+                            <div class="decision-text" id="videoOverallResultText">AWAITING VIDEO</div>
+                            <div class="decision-action" id="videoOverallActionText">UPLOAD OR SELECT A VIDEO TO PROCESS</div>
+                        </div>
+                        <div class="decision-right">
+                            <div class="metric-block">
+                                <span class="metric-label">FRAMES PROCESSED</span>
+                                <span class="metric-val" id="videoProcessedFramesVal">0</span>
+                            </div>
+                            <div class="metric-block">
+                                <span class="metric-label">DEFECTIVE FRAMES</span>
+                                <span class="metric-val danger-text" id="videoDefectiveFramesVal">0</span>
+                            </div>
+                            <div class="metric-block">
+                                <span class="metric-label">PASS FRAMES</span>
+                                <span class="metric-val success-text" id="videoPassFramesVal">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Keyframes Gallery -->
+                    <div class="keyframes-section">
+                        <div class="display-title">Annotated Keyframe Stream</div>
+                        <div class="keyframes-grid" id="videoKeyframesGrid">
+                            <div class="placeholder-msg">Processed keyframes will display here</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODE 3: LIVE WEBCAM INSPECTION -->
+        <section id="modeWebcam" class="mode-section">
+            <div class="section-layout webcam-layout">
+                <!-- Webcam Viewport with Industrial Area Overlay -->
+                <div class="webcam-viewport-card">
+                    <div class="viewport-header">
+                        <div class="viewport-title-group">
+                            <span class="rec-dot" id="webcamRecDot"></span>
+                            <h2>LIVE INDUSTRIAL CAMERA STREAM</h2>
+                        </div>
+                        <div class="live-stats">
+                            <span class="stat-pill">FPS: <strong id="webcamFpsVal">--</strong></span>
+                            <span class="stat-pill">LATENCY: <strong id="webcamLatencyVal">-- ms</strong></span>
+                            <span class="stat-pill">MODEL: <strong>HOG + Kernel SVM</strong></span>
+                        </div>
+                    </div>
+
+                    <div class="video-canvas-container" id="webcamContainer">
+                        <!-- Hidden Video Element for Hardware Capture -->
+                        <video id="webcamVideo" autoplay playsinline muted></video>
+
+                        <!-- Main Canvas for Rendering Video + Inspection ROI + Defect Bounding Boxes -->
+                        <canvas id="webcamCanvas"></canvas>
+
+                        <!-- Visual Industrial Inspection Area Overlay -->
+                        <div class="inspection-overlay-box" id="inspectionOverlay">
+                            <div class="inspection-header">
+                                <span class="corner top-left"></span>
+                                <span class="corner top-right"></span>
+                                <span class="overlay-title">INSPECTION AREA</span>
+                                <span class="overlay-prompt">PLACE PRODUCT HERE</span>
+                                <span class="corner bottom-left"></span>
+                                <span class="corner bottom-right"></span>
+                            </div>
+                        </div>
+
+                        <!-- Camera Stopped Overlay -->
+                        <div class="camera-off-overlay" id="cameraOffOverlay">
+                            <div class="cam-prompt-icon">
+                                <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5">
+                                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path>
+                                    <circle cx="12" cy="13" r="4"></circle>
+                                </svg>
+                            </div>
+                            <h3>Live Camera Offline</h3>
+                            <p>Click "START WEBCAM" below to begin real-time HOG defect inspection.</p>
+                            <button class="btn btn-primary" onclick="startWebcam()">START WEBCAM</button>
+                        </div>
+                    </div>
+
+                    <!-- Webcam Control Toolbar -->
+                    <div class="webcam-toolbar">
+                        <button class="btn btn-primary" id="btnStartWebcam" onclick="startWebcam()">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+                            </svg>
+                            START WEBCAM
+                        </button>
+                        <button class="btn btn-secondary" id="btnStopWebcam" onclick="stopWebcam()" disabled>
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="6" y="6" width="12" height="12"></rect>
+                            </svg>
+                            STOP WEBCAM
+                        </button>
+                        <div class="toolbar-sep"></div>
+                        <div class="toggle-control">
+                            <label><input type="checkbox" id="chkShowAllBoxes"> Highlight All Patches</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Live Real-Time Decision Panel -->
+                <div class="live-decision-panel">
+                    <div class="panel-header">
+                        <h2>REAL-TIME INSPECTION STATUS</h2>
+                        <span class="live-status-pill" id="liveStreamStatus">READY</span>
+                    </div>
+
+                    <!-- Big Real-Time Status Card -->
+                    <div class="live-status-card idle" id="liveStatusCard">
+                        <div class="live-status-indicator" id="liveStatusText">STANDBY</div>
+                        <div class="live-action-text" id="liveActionText">START WEBCAM TO INSPECT</div>
+                    </div>
+
+                    <!-- Live Metrics Display -->
+                    <div class="live-metrics-grid">
+                        <div class="live-metric-card">
+                            <span class="metric-title">CONFIDENCE</span>
+                            <span class="metric-large" id="liveConfidenceVal">--%</span>
+                        </div>
+                        <div class="live-metric-card">
+                            <span class="metric-title">DEFECT WINDOWS</span>
+                            <span class="metric-large" id="liveDefectCountVal">0</span>
+                        </div>
+                        <div class="live-metric-card">
+                            <span class="metric-title">THRESHOLD (thr)</span>
+                            <span class="metric-large">0.50</span>
+                        </div>
+                        <div class="live-metric-card">
+                            <span class="metric-title">MIN WINDOWS (need)</span>
+                            <span class="metric-large">2</span>
+                        </div>
+                    </div>
+
+                    <!-- ROI Crop Zoom Preview -->
+                    <div class="roi-zoom-card">
+                        <div class="display-title">Active 200×200 Inspection Region</div>
+                        <div class="roi-canvas-wrapper">
+                            <canvas id="roiCanvas" width="200" height="200"></canvas>
+                        </div>
+                        <p class="roi-caption">HOG extraction is focused directly inside this designated ROI</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Safety / Model Limitation Notice Footer -->
+    <footer class="app-footer">
+        <div class="footer-container">
+            <div class="safety-notice">
+                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <p><strong>Note:</strong> This prototype was trained on industrial steel surface images. Predictions are intended for surfaces similar to the training data and may be unreliable for unrelated objects or environments.</p>
+            </div>
+            <div class="footer-credits">
+                <span>Computer Vision Lab 05 Bonus Challenge</span> &bull;
+                <span>HOG + Kernel SVM Defect Detection</span>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
