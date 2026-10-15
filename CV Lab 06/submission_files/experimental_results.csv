@@ -1,0 +1,33 @@
+True_Landmark,Condition,Predicted,Keypoints,Reliable_Matches,RANSAC_Inliers,Decision,Correct,Time_s
+Christ the Redeemer,Original,Unknown (rejected),135,6,0,Rejected,False,0.259
+Christ the Redeemer,Rotated (45 deg),Unknown (rejected),168,11,5,Rejected,False,0.33
+Christ the Redeemer,Resized (50%),Unknown (rejected),107,6,0,Rejected,False,0.122
+Christ the Redeemer,Low brightness,Unknown (rejected),41,3,0,Rejected,False,0.08
+Christ the Redeemer,Different viewpoint,Unknown (rejected),319,15,13,Rejected,False,0.378
+Colosseum,Original,Unknown (rejected),541,14,5,Rejected,False,0.866
+Colosseum,Rotated (45 deg),Unknown (rejected),754,12,7,Rejected,False,1.211
+Colosseum,Resized (50%),Unknown (rejected),140,8,0,Rejected,False,0.184
+Colosseum,Low brightness,Unknown (rejected),198,7,0,Rejected,False,0.226
+Colosseum,Different viewpoint,Unknown (rejected),599,10,5,Rejected,False,0.675
+Great Wall of China,Original,Unknown (rejected),326,9,5,Rejected,False,0.384
+Great Wall of China,Rotated (45 deg),Unknown (rejected),444,8,6,Rejected,False,0.646
+Great Wall of China,Resized (50%),Unknown (rejected),102,3,0,Rejected,False,0.136
+Great Wall of China,Low brightness,Unknown (rejected),146,6,0,Rejected,False,0.163
+Great Wall of China,Different viewpoint,Unknown (rejected),317,12,5,Rejected,False,0.378
+Pyramids of Giza,Original,Unknown (rejected),138,6,0,Rejected,False,0.196
+Pyramids of Giza,Rotated (45 deg),Unknown (rejected),205,9,7,Rejected,False,0.6
+Pyramids of Giza,Resized (50%),Unknown (rejected),62,4,0,Rejected,False,0.141
+Pyramids of Giza,Low brightness,Unknown (rejected),12,2,0,Rejected,False,0.044
+Pyramids of Giza,Different viewpoint,Unknown (rejected),2000,26,8,Rejected,False,3.291
+Statue of Liberty,Original,Unknown (rejected),171,19,16,Rejected,False,0.198
+Statue of Liberty,Rotated (45 deg),Statue of Liberty,229,24,16,Recognized,True,0.306
+Statue of Liberty,Resized (50%),Unknown (rejected),61,4,0,Rejected,False,0.07
+Statue of Liberty,Low brightness,Unknown (rejected),56,5,0,Rejected,False,0.066
+Statue of Liberty,Different viewpoint,Unknown (rejected),303,14,7,Rejected,False,0.342
+Taj Mahal,Original,Unknown (rejected),229,9,5,Rejected,False,0.253
+Taj Mahal,Rotated (45 deg),Unknown (rejected),282,19,6,Rejected,False,0.384
+Taj Mahal,Resized (50%),Unknown (rejected),66,5,0,Rejected,False,0.071
+Taj Mahal,Low brightness,Unknown (rejected),50,5,0,Rejected,False,0.064
+Taj Mahal,Different viewpoint,Unknown (rejected),484,16,14,Rejected,False,0.542
+stonehenge (not in DB),Unknown landmark #1,Unknown (rejected),243,9,6,Rejected,True,0.306
+stonehenge (not in DB),Unknown landmark #2,Unknown (rejected),1652,53,7,Rejected,True,3.329
