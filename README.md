@@ -6,7 +6,7 @@
 [![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-5C3EE8.svg)](https://opencv.org/)
 [![Jupyter](https://img.shields.io/badge/Jupyter-Notebooks-F37626.svg)](https://jupyter.org/)
 
-A comprehensive collection of practical laboratory experiments, benchmarks, and assignments for **Introduction to Computer Vision (7th Semester)**. This repository explores classical image processing pipelines, spatial filtering, edge detection, mathematical morphology, deep Convolutional Neural Networks (CNNs) benchmarked on dermoscopic medical imaging datasets (ISIC and HAM10000), and feature-descriptor-based industrial defect detection pipelines (HOG + Kernel SVM) with real-time web deployment.
+A comprehensive collection of practical laboratory experiments, benchmarks, and assignments for **Introduction to Computer Vision (7th Semester)**. This repository explores classical image processing pipelines, spatial filtering, edge detection, mathematical morphology, deep Convolutional Neural Networks (CNNs) benchmarked on dermoscopic medical imaging datasets (ISIC and HAM10000), feature-descriptor-based industrial defect detection pipelines (HOG + Kernel SVM) with real-time web deployment, and scale-invariant feature transform (SIFT) landmark recognition with RANSAC homography localization and open-set rejection.
 
 ---
 
@@ -19,9 +19,11 @@ A comprehensive collection of practical laboratory experiments, benchmarks, and 
   - [Lab 03: Edge Detection, Noise Sensitivity & Edge Representations](#lab-03-edge-detection-noise-sensitivity--edge-representations)
   - [Lab Assignment 01 (Lab 04): Skin Lesion Boundary Detection & Morphometry](#lab-assignment-01-lab-04-skin-lesion-boundary-detection--morphometry)
   - [Lab 05: Industrial Defect Detection using HOG & Kernel SVM](#lab-05-industrial-defect-detection-using-hog--kernel-svm)
+  - [Lab 06: Landmark Recognition & Localization using SIFT & RANSAC](#lab-06-landmark-recognition--localization-using-sift--ransac)
 - [Key Empirical Results](#-key-empirical-results)
   - [Filter Benchmark Summary (Lab 02)](#filter-benchmark-summary-lab-02--test-set)
   - [Classifier Benchmark Summary (Lab 05)](#classifier-benchmark-summary-lab-05--industrial-defect-detection)
+  - [SIFT Landmark Recognition Summary (Lab 06)](#sift-landmark-recognition-summary-lab-06--test-perturbations--open-set-queries)
 - [Tech Stack & Dependencies](#-tech-stack--dependencies)
 - [Getting Started](#-getting-started)
 - [Author & Academic Info](#-author--academic-info)
@@ -65,6 +67,13 @@ Computer-Vision-Labs/
 │       ├── templates/ & static/    # Modern dark-mode UI with real-time inspection indicators
 │       ├── sample_images/          # Normal & defective steel samples and conveyor belt test video
 │       └── requirements.txt        # Bonus app dependencies
+│
+├── CV Lab 06/
+│   ├── SIFT_Landmark_Recognition.ipynb # End-to-end SIFT landmark recognition & homography pipeline
+│   ├── Lab_Report.docx                 # Formal academic lab report and analysis
+│   ├── Lab_Report.md                   # Complete Markdown report, metrics, and screenshots
+│   ├── landmark_database/              # Reference gallery across 6 world landmarks (8 views each)
+│   └── submission_files/               # Visualizations, test condition outputs, and experimental CSV
 │
 ├── LICENSE                         # MIT License
 └── README.md                       # Repository documentation
@@ -138,6 +147,23 @@ Computer-Vision-Labs/
 
 ---
 
+### Lab 06: Landmark Recognition & Localization using SIFT & RANSAC
+- **Objective:** Construct a feature-based landmark recognition and geometric localization system using **Scale-Invariant Feature Transform (SIFT)** and **RANSAC Homography**, featuring strict open-set rejection for unseen queries.
+- **Reference Gallery & Dataset:**
+  - Curated database of 6 global landmarks from Kaggle's Wonders of the World dataset: *Taj Mahal, Great Wall of China, Statue of Liberty, Roman Colosseum, Pyramids of Giza, Christ the Redeemer*.
+  - Reference gallery composed of 8 distinct viewpoints per landmark (48 reference images total), multithreaded SIFT feature extraction (up to 2,000 features per image), downscaled to max dimension 800 px.
+- **Matching & Localization Pipeline:**
+  - **Feature Extraction:** Grayscale conversion and keypoint/128-dimensional descriptor extraction via `cv2.SIFT_create(nfeatures=2000)`.
+  - **Descriptor Matching:** Brute-force Euclidean distance matching (`cv2.BFMatcher(cv2.NORM_L2)`) with $k=2$ nearest neighbors.
+  - **Ambiguity Filtering:** Lowe's ratio test ($d_1 / d_2 < 0.75$) to discard non-distinctive repetitive matches.
+  - **Geometric Verification & Localization:** Multi-point homography estimation (`cv2.findHomography`) with RANSAC reprojection error threshold ($\le 5.0$ px); projected bounding polygon validation ensuring convexity and plausible scene area ($0.01 \times A_{\text{query}} < A_{\text{poly}} < 3.0 \times A_{\text{query}}$).
+  - **Dual-Threshold Decision Rule:** Multi-level acceptance criterion requiring $\ge 20$ reliable matches, $\ge 12$ RANSAC inliers, convex geometry, and a distinct inlier margin ($\ge 1.3\times$ over the runner-up landmark).
+- **Stress Testing & Perturbation Analysis:**
+  - Evaluated across 32 query configurations: unaltered held-out images, 45° boundary-preserving rotations, 50% spatial downscaling, low illumination ($\alpha = 0.35$), viewpoint disparities, and negative/unseen landmarks (*Stonehenge*).
+  - **Key Finding:** SIFT proved robust to rotation (13.8 avg matches, 7.8 inliers), but sensitive to extreme resolution reduction and low illumination. The multi-stage inlier and margin gating completely eliminated false recognitions (0% false acceptance on open-set queries).
+
+---
+
 ## 📊 Key Empirical Results
 
 ### Filter Benchmark Summary (Lab 02 — Test Set)
@@ -161,6 +187,18 @@ Computer-Vision-Labs/
 | HOG + Random Forest | 75.79 | 75.85 | 87.98 | 81.47 | 0.24 ms |
 | HOG + SVM (Linear) | 71.06 | 77.95 | 72.74 | 75.26 | 0.13 ms |
 | HOG + kNN ($k=5$) | 51.57 | 90.05 | 22.43 | 35.91 | 1.07 ms |
+
+### SIFT Landmark Recognition Summary (Lab 06 — Test Perturbations & Open-Set Queries)
+
+| Query Condition | Test Count | Avg Keypoints | Avg Reliable Matches | Avg RANSAC Inliers | Avg Inference Time (s) | Recognition / Correct Rate |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Rotated (45°)** | 6 | 347 | 13.8 | 7.8 | 0.58 s | 1/6 (Recognized) |
+| **Different Viewpoint** | 6 | 670 | 15.5 | 8.7 | 0.93 s | 0/6 (Rejected - Strict Margins) |
+| **Original (Held-out)** | 6 | 257 | 10.5 | 5.2 | 0.36 s | 0/6 (Rejected - Below Threshold) |
+| **Resized (50% Scale)** | 6 | 90 | 5.0 | 0.0 | 0.12 s | 0/6 (Rejected - Few Features) |
+| **Low Brightness ($\alpha=0.35$)** | 6 | 84 | 4.7 | 0.0 | 0.11 s | 0/6 (Rejected - Low Contrast) |
+| **Open-Set Negative (Stonehenge)** | 2 | 948 | 31.0 | 6.5 | 1.82 s | **2/2 (Correctly Rejected - 100%)** |
+| **Overall Stress Benchmark** | **32** | **331** | **11.2** | **4.5** | **0.51 s** | **3/32 (9.4% strictly passed; 0% false positives)** |
 
 ---
 
@@ -214,7 +252,7 @@ pip install torch torchvision opencv-python numpy pandas matplotlib seaborn scik
 ```bash
 jupyter notebook
 ```
-Navigate to any lab folder (`CV Lab 01`, `CV Lab 02`, `CV Lab 03`, `Lab Assignment 01_CV Lab 04`, or `CV Lab 05`) and execute the respective `.ipynb` notebook.
+Navigate to any lab folder (`CV Lab 01`, `CV Lab 02`, `CV Lab 03`, `Lab Assignment 01_CV Lab 04`, `CV Lab 05`, or `CV Lab 06`) and execute the respective `.ipynb` notebook.
 
 ### 6. Run the Real-Time Quality Inspection Prototype (Lab 05 Bonus)
 ```bash
