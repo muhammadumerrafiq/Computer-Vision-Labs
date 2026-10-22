@@ -6,7 +6,7 @@
 [![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-5C3EE8.svg)](https://opencv.org/)
 [![Jupyter](https://img.shields.io/badge/Jupyter-Notebooks-F37626.svg)](https://jupyter.org/)
 
-A comprehensive collection of practical laboratory experiments, benchmarks, and assignments for **Introduction to Computer Vision (7th Semester)**. This repository explores classical image processing pipelines, spatial filtering, edge detection, mathematical morphology, deep Convolutional Neural Networks (CNNs) benchmarked on dermoscopic medical imaging datasets (ISIC and HAM10000), feature-descriptor-based industrial defect detection pipelines (HOG + Kernel SVM) with real-time web deployment, and scale-invariant feature transform (SIFT) landmark recognition with RANSAC homography localization and open-set rejection.
+A comprehensive collection of practical laboratory experiments, benchmarks, and assignments for **Introduction to Computer Vision (7th Semester)**. This repository explores classical image processing pipelines, spatial filtering, edge detection, mathematical morphology, deep Convolutional Neural Networks (CNNs) benchmarked on dermoscopic medical imaging datasets (ISIC and HAM10000), feature-descriptor-based industrial defect detection pipelines (HOG + Kernel SVM) with real-time web deployment, scale-invariant feature transform (SIFT) landmark recognition with RANSAC homography localization and open-set rejection, and evolutionary feature selection using Genetic Algorithms (GA-HOG) for medical image classification (PneumoniaMNIST).
 
 ---
 
@@ -20,10 +20,12 @@ A comprehensive collection of practical laboratory experiments, benchmarks, and 
   - [Lab Assignment 01 (Lab 04): Skin Lesion Boundary Detection & Morphometry](#lab-assignment-01-lab-04-skin-lesion-boundary-detection--morphometry)
   - [Lab 05: Industrial Defect Detection using HOG & Kernel SVM](#lab-05-industrial-defect-detection-using-hog--kernel-svm)
   - [Lab 06: Landmark Recognition & Localization using SIFT & RANSAC](#lab-06-landmark-recognition--localization-using-sift--ransac)
+  - [Lab 07: Evolutionary Feature Selection for Medical Image Classification (GA-HOG)](#lab-07-evolutionary-feature-selection-for-medical-image-classification-ga-hog)
 - [Key Empirical Results](#-key-empirical-results)
   - [Filter Benchmark Summary (Lab 02)](#filter-benchmark-summary-lab-02--test-set)
   - [Classifier Benchmark Summary (Lab 05)](#classifier-benchmark-summary-lab-05--industrial-defect-detection)
   - [SIFT Landmark Recognition Summary (Lab 06)](#sift-landmark-recognition-summary-lab-06--test-perturbations--open-set-queries)
+  - [GA-HOG Feature Selection Benchmark (Lab 07)](#ga-hog-feature-selection-benchmark-lab-07--pneumoniamnist)
 - [Tech Stack & Dependencies](#-tech-stack--dependencies)
 - [Getting Started](#-getting-started)
 - [Author & Academic Info](#-author--academic-info)
@@ -75,8 +77,14 @@ Computer-Vision-Labs/
 │   ├── landmark_database/              # Reference gallery across 6 world landmarks (8 views each)
 │   └── submission_files/               # Visualizations, test condition outputs, and experimental CSV
 │
-├── LICENSE                         # MIT License
-└── README.md                       # Repository documentation
+├── CV Lab 07/
+│   ├── Lab07.ipynb                     # Executed GA-HOG feature selection & SVM training pipeline
+│   ├── Lab 07.docx                     # Formal academic lab report documentation
+│   ├── Lab07_Report.md                 # Complete Markdown report, metrics, and discussion
+│   └── lab07_outputs/                  # Confusion matrices, feature distributions, GA fitness curves & CSVs
+│
+├── LICENSE                             # MIT License
+└── README.md                           # Repository documentation
 ```
 
 ---
@@ -164,6 +172,20 @@ Computer-Vision-Labs/
 
 ---
 
+### Lab 07: Evolutionary Feature Selection for Medical Image Classification (GA-HOG)
+- **Objective:** Modify the classical Histogram of Oriented Gradients (HOG) pipeline by incorporating a Genetic Algorithm (GA) wrapper for feature selection to reduce descriptor dimensionality and boost classification on medical imaging.
+- **Dataset:** **PneumoniaMNIST** from MedMNIST v2 (pediatric chest X-ray binary classification: *Normal* vs. *Pneumonia*; 5,030 total images with fixed splits: 3,882 train / 524 validation / 624 test).
+- **Pipeline & Architecture:**
+  - **Feature Extraction:** Standard HOG descriptor ($128\times128$ resolution, 9 orientations, $8\times8$ pixel cells, $2\times2$ cell blocks, L2-Hys normalization) yielding **8,100 features** per image.
+  - **GA Optimization Wrapper:** Searches a binary feature selection mask over 8,100 dimensions. Fitness balances validation macro-F1 against feature sparsity: $\text{Fitness} = \text{Macro-F1}_{\text{val}} - 0.05 \times \frac{|\text{selected features}|}{8,100}$.
+  - **Genetic Operators:** Tournament selection (size 3), uniform crossover ($p = 0.9$), bit-flip mutation, and elitism (2 best individuals preserved) evolved over 15 generations.
+  - **GPU-Accelerated Kernel SVM:** Fast RBF kernel Gram matrices evaluated on GPU (PyTorch) with scikit-learn precomputed `SVC(kernel="precomputed")`, exploring three GA configurations (GA-A, GA-B, GA-C).
+- **Key Findings:**
+  - The optimal configuration (**GA-A**) reduced feature dimensionality by **73.7%** (retaining only **2,129** out of 8,100 features).
+  - Outperformed standard baseline HOG on the unseen test set across all primary metrics: **Macro-F1 +4.58%** (77.36% $\to$ **81.95%**), **Accuracy +3.21%** (81.57% $\to$ **84.78%**), and **Normal class recall +8.98%** (51.28% $\to$ **60.26%**).
+
+---
+
 ## 📊 Key Empirical Results
 
 ### Filter Benchmark Summary (Lab 02 — Test Set)
@@ -199,6 +221,14 @@ Computer-Vision-Labs/
 | **Low Brightness ($\alpha=0.35$)** | 6 | 84 | 4.7 | 0.0 | 0.11 s | 0/6 (Rejected - Low Contrast) |
 | **Open-Set Negative (Stonehenge)** | 2 | 948 | 31.0 | 6.5 | 1.82 s | **2/2 (Correctly Rejected - 100%)** |
 | **Overall Stress Benchmark** | **32** | **331** | **11.2** | **4.5** | **0.51 s** | **3/32 (9.4% strictly passed; 0% false positives)** |
+
+### GA-HOG Feature Selection Benchmark (Lab 07 — PneumoniaMNIST)
+
+| Pipeline | Feature Dimension | Reduction (%) | Accuracy (%) | Macro-Precision (%) | Macro-Recall (%) | Macro-F1 (%) | Normal Recall (%) | Pneumonia Recall (%) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **GA-HOG + SVM (Proposed)** | **2,129** | **73.7%** | **84.78** | **89.63** | **79.87** | **81.95** | **60.26** | **99.49** |
+| HOG + SVM (Baseline) | 8,100 | 0.0% | 81.57 | 88.25 | 75.51 | 77.36 | 51.28 | **99.74** |
+| **Net Improvement** | **-5,971 features** | **-73.7%** | **+3.21%** | **+1.38%** | **+4.36%** | **+4.58%** | **+8.98%** | -0.25% |
 
 ---
 
@@ -252,7 +282,7 @@ pip install torch torchvision opencv-python numpy pandas matplotlib seaborn scik
 ```bash
 jupyter notebook
 ```
-Navigate to any lab folder (`CV Lab 01`, `CV Lab 02`, `CV Lab 03`, `Lab Assignment 01_CV Lab 04`, `CV Lab 05`, or `CV Lab 06`) and execute the respective `.ipynb` notebook.
+Navigate to any lab folder (`CV Lab 01`, `CV Lab 02`, `CV Lab 03`, `Lab Assignment 01_CV Lab 04`, `CV Lab 05`, `CV Lab 06`, or `CV Lab 07`) and execute the respective `.ipynb` notebook.
 
 ### 6. Run the Real-Time Quality Inspection Prototype (Lab 05 Bonus)
 ```bash
