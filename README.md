@@ -6,7 +6,7 @@
 [![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-5C3EE8.svg)](https://opencv.org/)
 [![Jupyter](https://img.shields.io/badge/Jupyter-Notebooks-F37626.svg)](https://jupyter.org/)
 
-A comprehensive collection of practical laboratory experiments, benchmarks, and assignments for **Introduction to Computer Vision (7th Semester)**. This repository explores classical image processing pipelines, spatial filtering, edge detection, mathematical morphology, deep Convolutional Neural Networks (CNNs) benchmarked on dermoscopic medical imaging datasets (ISIC and HAM10000), feature-descriptor-based industrial defect detection pipelines (HOG + Kernel SVM) with real-time web deployment, scale-invariant feature transform (SIFT) landmark recognition with RANSAC homography localization and open-set rejection, and evolutionary feature selection using Genetic Algorithms (GA-HOG) for medical image classification (PneumoniaMNIST).
+A comprehensive collection of practical laboratory experiments, benchmarks, and assignments for **Introduction to Computer Vision (7th Semester)**. This repository explores classical image processing pipelines, spatial filtering, edge detection, mathematical morphology, deep Convolutional Neural Networks (CNNs) benchmarked on dermoscopic medical imaging datasets (ISIC and HAM10000), feature-descriptor-based industrial defect detection pipelines (HOG + Kernel SVM) with real-time web deployment, scale-invariant feature transform (SIFT) landmark recognition with RANSAC homography localization and open-set rejection, evolutionary feature selection using Genetic Algorithms (GA-HOG) for medical image classification (PneumoniaMNIST), and a comparative study of classical gradient and keypoint feature representations (HOG vs. Dense SIFT with Linear SVM) alongside perturbation robustness stress testing on microscopic blood-cell images (BloodMNIST) for the Midterm Lab Examination.
 
 ---
 
@@ -21,11 +21,13 @@ A comprehensive collection of practical laboratory experiments, benchmarks, and 
   - [Lab 05: Industrial Defect Detection using HOG & Kernel SVM](#lab-05-industrial-defect-detection-using-hog--kernel-svm)
   - [Lab 06: Landmark Recognition & Localization using SIFT & RANSAC](#lab-06-landmark-recognition--localization-using-sift--ransac)
   - [Lab 07: Evolutionary Feature Selection for Medical Image Classification (GA-HOG)](#lab-07-evolutionary-feature-selection-for-medical-image-classification-ga-hog)
+  - [CV Lab Mid: HOG vs. SIFT on Blood-Cell Images (BloodMNIST)](#cv-lab-mid-hog-vs-sift-on-blood-cell-images-bloodmnist)
 - [Key Empirical Results](#-key-empirical-results)
   - [Filter Benchmark Summary (Lab 02)](#filter-benchmark-summary-lab-02--test-set)
   - [Classifier Benchmark Summary (Lab 05)](#classifier-benchmark-summary-lab-05--industrial-defect-detection)
   - [SIFT Landmark Recognition Summary (Lab 06)](#sift-landmark-recognition-summary-lab-06--test-perturbations--open-set-queries)
   - [GA-HOG Feature Selection Benchmark (Lab 07)](#ga-hog-feature-selection-benchmark-lab-07--pneumoniamnist)
+  - [HOG vs. SIFT Robustness Benchmark (CV Lab Mid)](#hog-vs-sift-robustness-benchmark-cv-lab-mid--bloodmnist)
 - [Tech Stack & Dependencies](#-tech-stack--dependencies)
 - [Getting Started](#-getting-started)
 - [Author & Academic Info](#-author--academic-info)
@@ -82,6 +84,11 @@ Computer-Vision-Labs/
 │   ├── Lab 07.docx                     # Formal academic lab report documentation
 │   ├── Lab07_Report.md                 # Complete Markdown report, metrics, and discussion
 │   └── lab07_outputs/                  # Confusion matrices, feature distributions, GA fitness curves & CSVs
+│
+├── CV Lab Mid/
+│   ├── FA23_BAI_013_Muhammad_Umer_Rafiq_LabMid.ipynb # Executed HOG vs. SIFT comparison, parameter sweeps & robustness evaluation
+│   ├── LabMid Report.pdf                             # Formal academic midterm examination report
+│   └── LabMid.md                                     # Full Markdown report, questions, results, confusion matrices & analysis
 │
 ├── LICENSE                             # MIT License
 └── README.md                           # Repository documentation
@@ -186,6 +193,21 @@ Computer-Vision-Labs/
 
 ---
 
+### CV Lab Mid: HOG vs. SIFT on Blood-Cell Images (BloodMNIST)
+- **Objective:** Systematically compare and analyze classical gradient-based (**HOG**) and keypoint-based (**Dense SIFT**) feature representation pipelines paired with Linear Support Vector Machines (LinearSVC) on microscopic blood-cell classification.
+- **Dataset:** **BloodMNIST** (MedMNIST v2) 4-class balanced subset: *eosinophil* (ID 1), *monocyte* (ID 5), *neutrophil* (ID 6), and *platelet* (ID 7) standardized to $128\times128$ grayscale (400 train, 120 validation, 120 test).
+- **Pipelines & Feature Representations:**
+  - **HOG + Linear SVM:** Configured with cell size $16\times16$, $2\times2$ blocks (stride 1 cell), 9 orientation bins, and L2-Hys block normalization $\to$ **1,764 features** per image. Hyperparameter grid sweep on validation set ($C \in \{0.1, 1, 10\}$) selected $C=0.1$ $\to$ **78.33% Val Accuracy**, **78.27% Macro-F1**.
+  - **Dense SIFT + Linear SVM:** Keypoints sampled at uniform regular $4\times4$ grid coordinates (16 keypoints total, diameter 32px, fixed orientation $\theta=0^\circ$), generating concatenated 128-dimensional descriptors $\to$ **2,048 features** per image. Hyperparameter grid sweep on validation set selected $C=0.1$ $\to$ **75.00% Val Accuracy**, **75.23% Macro-F1**.
+- **Robustness & Perturbation Stress Testing:**
+  - Evaluated on completely unseen test data across three conditions: **Clean**, **Rotated 20°** (in-plane affine transformation), and **Additive Gaussian Noise** ($\sigma = 0.05$).
+  - **Rotation:** HOG exhibited higher rotational stability (**-5.83 pp drop**: 72.50% $\to$ 66.67%) than dense fixed-grid SIFT (**-33.34 pp drop**: 79.17% $\to$ 45.83%) because fixed-angle SIFT without dominant orientation assignment is non-rotation-invariant.
+  - **Additive Noise:** Dense SIFT showed remarkable noise resistance (**+2.50 pp**: 79.17% $\to$ 81.67%) due to Gaussian spatial weighting averaging over 32px neighborhoods, whereas HOG collapsed (**-47.50 pp drop**: 72.50% $\to$ 25.00%) due to un-smoothed 1st-order pixel gradients amplifying high-frequency noise.
+- **Error Analysis & Granulocyte Confusion:**
+  - Eosinophils exhibited the highest confusion across both pipelines (*eosinophil* $\leftrightarrow$ *monocyte* in HOG, *eosinophil* $\leftrightarrow$ *neutrophil* in SIFT). This stems from converting to grayscale, which strips essential cytoplasmic granule staining coloration (e.g., distinctive eosinophilic red-orange granule tint).
+
+---
+
 ## 📊 Key Empirical Results
 
 ### Filter Benchmark Summary (Lab 02 — Test Set)
@@ -229,6 +251,13 @@ Computer-Vision-Labs/
 | **GA-HOG + SVM (Proposed)** | **2,129** | **73.7%** | **84.78** | **89.63** | **79.87** | **81.95** | **60.26** | **99.49** |
 | HOG + SVM (Baseline) | 8,100 | 0.0% | 81.57 | 88.25 | 75.51 | 77.36 | 51.28 | **99.74** |
 | **Net Improvement** | **-5,971 features** | **-73.7%** | **+3.21%** | **+1.38%** | **+4.36%** | **+4.58%** | **+8.98%** | -0.25% |
+
+### HOG vs. SIFT Robustness Benchmark (CV Lab Mid — BloodMNIST)
+
+| Pipeline / Representation | Feature Dimension | Validation Accuracy (%) | Validation Macro-F1 (%) | Test Clean Acc (%) | Test Rotated (20°) Acc (%) | Rotation Drop (pp) | Test Noisy ($\sigma=0.05$) Acc (%) | Noise Drop (pp) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **HOG + Linear SVM** | 1,764 | **78.33** | **78.27** | 72.50 | **66.67** | **-5.83** | 25.00 | -47.50 |
+| **Dense SIFT + Linear SVM** | 2,048 | 75.00 | 75.23 | **79.17** | 45.83 | -33.34 | **81.67** | **+2.50** |
 
 ---
 
@@ -282,7 +311,7 @@ pip install torch torchvision opencv-python numpy pandas matplotlib seaborn scik
 ```bash
 jupyter notebook
 ```
-Navigate to any lab folder (`CV Lab 01`, `CV Lab 02`, `CV Lab 03`, `Lab Assignment 01_CV Lab 04`, `CV Lab 05`, `CV Lab 06`, or `CV Lab 07`) and execute the respective `.ipynb` notebook.
+Navigate to any lab folder (`CV Lab 01`, `CV Lab 02`, `CV Lab 03`, `Lab Assignment 01_CV Lab 04`, `CV Lab 05`, `CV Lab 06`, `CV Lab 07`, or `CV Lab Mid`) and execute the respective `.ipynb` notebook.
 
 ### 6. Run the Real-Time Quality Inspection Prototype (Lab 05 Bonus)
 ```bash
