@@ -6,7 +6,7 @@
 [![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-5C3EE8.svg)](https://opencv.org/)
 [![Jupyter](https://img.shields.io/badge/Jupyter-Notebooks-F37626.svg)](https://jupyter.org/)
 
-A comprehensive collection of practical laboratory experiments, benchmarks, and assignments for **Introduction to Computer Vision (7th Semester)**. This repository explores classical image processing pipelines, spatial filtering, edge detection, mathematical morphology, deep Convolutional Neural Networks (CNNs) benchmarked on dermoscopic medical imaging datasets (ISIC and HAM10000), feature-descriptor-based industrial defect detection pipelines (HOG + Kernel SVM) with real-time web deployment, scale-invariant feature transform (SIFT) landmark recognition with RANSAC homography localization and open-set rejection, evolutionary feature selection using Genetic Algorithms (GA-HOG) for medical image classification (PneumoniaMNIST), a comparative study of classical gradient and keypoint feature representations (HOG vs. Dense SIFT with Linear SVM) alongside perturbation robustness stress testing on microscopic blood-cell images (BloodMNIST) for the Midterm Lab Examination, and an empirical benchmarking study of six fundamental machine learning regression algorithms across linear, ensemble, nearest-neighbor, and deep neural paradigms (Lab Assignment 02 / Lab 10).
+A comprehensive collection of practical laboratory experiments, benchmarks, and assignments for **Introduction to Computer Vision (7th Semester)**. This repository explores classical image processing pipelines, spatial filtering, edge detection, mathematical morphology, deep Convolutional Neural Networks (CNNs) benchmarked on dermoscopic medical imaging datasets (ISIC and HAM10000), feature-descriptor-based industrial defect detection pipelines (HOG + Kernel SVM) with real-time web deployment, scale-invariant feature transform (SIFT) landmark recognition with RANSAC homography localization and open-set rejection, evolutionary feature selection using Genetic Algorithms (GA-HOG) for medical image classification (PneumoniaMNIST), a comparative study of classical gradient and keypoint feature representations (HOG vs. Dense SIFT with Linear SVM) alongside perturbation robustness stress testing on microscopic blood-cell images (BloodMNIST) for the Midterm Lab Examination, a region-aware bone fracture detection and localization framework using deep YOLO object detection on the FracAtlas musculoskeletal radiograph benchmark (CV Lab 09: FractureVision), and an empirical benchmarking study of six fundamental machine learning regression algorithms across linear, ensemble, nearest-neighbor, and deep neural paradigms (Lab Assignment 02 / Lab 10).
 
 ---
 
@@ -22,6 +22,7 @@ A comprehensive collection of practical laboratory experiments, benchmarks, and 
   - [Lab 06: Landmark Recognition & Localization using SIFT & RANSAC](#lab-06-landmark-recognition--localization-using-sift--ransac)
   - [Lab 07: Evolutionary Feature Selection for Medical Image Classification (GA-HOG)](#lab-07-evolutionary-feature-selection-for-medical-image-classification-ga-hog)
   - [CV Lab Mid: HOG vs. SIFT on Blood-Cell Images (BloodMNIST)](#cv-lab-mid-hog-vs-sift-on-blood-cell-images-bloodmnist)
+  - [CV Lab 09: FractureVision - Region-Aware Bone Fracture Detection using YOLO](#cv-lab-09-fracturevision---region-aware-bone-fracture-detection-using-yolo)
   - [Lab Assignment 02 (Lab 10): Comparative Implementation of ML Regression Algorithms](#lab-assignment-02-lab-10-comparative-implementation-of-ml-regression-algorithms)
 - [Key Empirical Results](#-key-empirical-results)
   - [Filter Benchmark Summary (Lab 02)](#filter-benchmark-summary-lab-02--test-set)
@@ -91,6 +92,10 @@ Computer-Vision-Labs/
 │   ├── FA23_BAI_013_Muhammad_Umer_Rafiq_LabMid.ipynb # Executed HOG vs. SIFT comparison, parameter sweeps & robustness evaluation
 │   ├── LabMid Report.pdf                             # Formal academic midterm examination report
 │   └── LabMid.md                                     # Full Markdown report, questions, results, confusion matrices & analysis
+│
+├── CV Lab 09/
+│   ├── FractureVision Abstract & Intro.docx          # Academic research paper draft & project proposal
+│   └── README.md                                     # Markdown documentation, abstract, workflow, and references
 │
 ├── Lab Assignment 02_CV Lab 10/
 │   ├── Regression Algorithms Comparison.ipynb        # Complete implementation, EDA, GPU training, and comparisons
@@ -212,6 +217,20 @@ Computer-Vision-Labs/
   - **Additive Noise:** Dense SIFT showed remarkable noise resistance (**+2.50 pp**: 79.17% $\to$ 81.67%) due to Gaussian spatial weighting averaging over 32px neighborhoods, whereas HOG collapsed (**-47.50 pp drop**: 72.50% $\to$ 25.00%) due to un-smoothed 1st-order pixel gradients amplifying high-frequency noise.
 - **Error Analysis & Granulocyte Confusion:**
   - Eosinophils exhibited the highest confusion across both pipelines (*eosinophil* $\leftrightarrow$ *monocyte* in HOG, *eosinophil* $\leftrightarrow$ *neutrophil* in SIFT). This stems from converting to grayscale, which strips essential cytoplasmic granule staining coloration (e.g., distinctive eosinophilic red-orange granule tint).
+
+---
+
+### CV Lab 09: FractureVision - Region-Aware Bone Fracture Detection using YOLO
+- **Objective:** Formulate, design, and simulate a region-aware deep learning framework (**FractureVision**) to detect and localize suspicious bone fracture regions in musculoskeletal X-ray radiographs, modeling its integration into an orthopedic clinical assistance workflow.
+- **Dataset:** **FracAtlas** benchmark dataset (4,083 musculoskeletal radiographs across hand, leg, hip, and shoulder collected from 3 hospitals in Bangladesh, containing 717 verified fractured scans and 922 annotated fracture instances with expert consensus).
+- **Target Anatomical Regions:**
+  - **Hand:** 1,538 scans (437 fractured), characterized by intricate clusters of small overlapping bones, high occlusion, and subtle micro-fractures near phalanges and metacarpals.
+  - **Leg:** 2,272 scans (263 fractured), characterized by elongated structural shafts (tibia, fibula, femur) providing distinct morphological contrast.
+  - Hand and leg account for over 97% of fractured images in FracAtlas, providing substantial structural diversity and training stability compared to under-represented regions (hip and shoulder with only 63 fractures each).
+- **Model Architecture & Workflow:**
+  - **YOLO Single-Stage Detection:** Fast bounding box regression and objectness scoring trained with a single detection class (`fracture`).
+  - **User-Guided Region Awareness:** Two-stage clinical interaction where the user specifies the target anatomical structure (Hand or Leg) before uploading the radiograph, routing inference appropriately.
+  - **AI-Assisted Workflow Simulation:** Returns localized bounding boxes with confidence scores to direct clinician attention toward subtle or ambiguous fractures without replacing professional clinical judgment.
 
 ---
 
@@ -350,7 +369,7 @@ pip install torch torchvision opencv-python numpy pandas matplotlib seaborn scik
 ```bash
 jupyter notebook
 ```
-Navigate to any lab folder (`CV Lab 01`, `CV Lab 02`, `CV Lab 03`, `Lab Assignment 01_CV Lab 04`, `CV Lab 05`, `CV Lab 06`, `CV Lab 07`, `CV Lab Mid`, or `Lab Assignment 02_CV Lab 10`) and execute the respective `.ipynb` notebook.
+Navigate to any lab folder (`CV Lab 01`, `CV Lab 02`, `CV Lab 03`, `Lab Assignment 01_CV Lab 04`, `CV Lab 05`, `CV Lab 06`, `CV Lab 07`, `CV Lab Mid`, `CV Lab 09`, or `Lab Assignment 02_CV Lab 10`) and explore the respective code, notebooks, or documentation.
 
 ### 6. Run the Real-Time Quality Inspection Prototype (Lab 05 Bonus)
 ```bash
