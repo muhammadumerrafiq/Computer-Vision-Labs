@@ -6,7 +6,7 @@
 [![OpenCV](https://img.shields.io/badge/OpenCV-Computer%20Vision-5C3EE8.svg)](https://opencv.org/)
 [![Jupyter](https://img.shields.io/badge/Jupyter-Notebooks-F37626.svg)](https://jupyter.org/)
 
-A comprehensive collection of practical laboratory experiments, benchmarks, and assignments for **Introduction to Computer Vision (7th Semester)**. This repository explores classical image processing pipelines, spatial filtering, edge detection, mathematical morphology, deep Convolutional Neural Networks (CNNs) benchmarked on dermoscopic medical imaging datasets (ISIC and HAM10000), feature-descriptor-based industrial defect detection pipelines (HOG + Kernel SVM) with real-time web deployment, scale-invariant feature transform (SIFT) landmark recognition with RANSAC homography localization and open-set rejection, evolutionary feature selection using Genetic Algorithms (GA-HOG) for medical image classification (PneumoniaMNIST), and a comparative study of classical gradient and keypoint feature representations (HOG vs. Dense SIFT with Linear SVM) alongside perturbation robustness stress testing on microscopic blood-cell images (BloodMNIST) for the Midterm Lab Examination.
+A comprehensive collection of practical laboratory experiments, benchmarks, and assignments for **Introduction to Computer Vision (7th Semester)**. This repository explores classical image processing pipelines, spatial filtering, edge detection, mathematical morphology, deep Convolutional Neural Networks (CNNs) benchmarked on dermoscopic medical imaging datasets (ISIC and HAM10000), feature-descriptor-based industrial defect detection pipelines (HOG + Kernel SVM) with real-time web deployment, scale-invariant feature transform (SIFT) landmark recognition with RANSAC homography localization and open-set rejection, evolutionary feature selection using Genetic Algorithms (GA-HOG) for medical image classification (PneumoniaMNIST), a comparative study of classical gradient and keypoint feature representations (HOG vs. Dense SIFT with Linear SVM) alongside perturbation robustness stress testing on microscopic blood-cell images (BloodMNIST) for the Midterm Lab Examination, and an empirical benchmarking study of six fundamental machine learning regression algorithms across linear, ensemble, nearest-neighbor, and deep neural paradigms (Lab Assignment 02 / Lab 10).
 
 ---
 
@@ -22,12 +22,14 @@ A comprehensive collection of practical laboratory experiments, benchmarks, and 
   - [Lab 06: Landmark Recognition & Localization using SIFT & RANSAC](#lab-06-landmark-recognition--localization-using-sift--ransac)
   - [Lab 07: Evolutionary Feature Selection for Medical Image Classification (GA-HOG)](#lab-07-evolutionary-feature-selection-for-medical-image-classification-ga-hog)
   - [CV Lab Mid: HOG vs. SIFT on Blood-Cell Images (BloodMNIST)](#cv-lab-mid-hog-vs-sift-on-blood-cell-images-bloodmnist)
+  - [Lab Assignment 02 (Lab 10): Comparative Implementation of ML Regression Algorithms](#lab-assignment-02-lab-10-comparative-implementation-of-ml-regression-algorithms)
 - [Key Empirical Results](#-key-empirical-results)
   - [Filter Benchmark Summary (Lab 02)](#filter-benchmark-summary-lab-02--test-set)
   - [Classifier Benchmark Summary (Lab 05)](#classifier-benchmark-summary-lab-05--industrial-defect-detection)
   - [SIFT Landmark Recognition Summary (Lab 06)](#sift-landmark-recognition-summary-lab-06--test-perturbations--open-set-queries)
   - [GA-HOG Feature Selection Benchmark (Lab 07)](#ga-hog-feature-selection-benchmark-lab-07--pneumoniamnist)
   - [HOG vs. SIFT Robustness Benchmark (CV Lab Mid)](#hog-vs-sift-robustness-benchmark-cv-lab-mid--bloodmnist)
+  - [Regression Benchmark Summary (Lab Assignment 02 / Lab 10)](#regression-benchmark-summary-lab-assignment-02--lab-10)
 - [Tech Stack & Dependencies](#-tech-stack--dependencies)
 - [Getting Started](#-getting-started)
 - [Author & Academic Info](#-author--academic-info)
@@ -89,6 +91,11 @@ Computer-Vision-Labs/
 │   ├── FA23_BAI_013_Muhammad_Umer_Rafiq_LabMid.ipynb # Executed HOG vs. SIFT comparison, parameter sweeps & robustness evaluation
 │   ├── LabMid Report.pdf                             # Formal academic midterm examination report
 │   └── LabMid.md                                     # Full Markdown report, questions, results, confusion matrices & analysis
+│
+├── Lab Assignment 02_CV Lab 10/
+│   ├── Regression Algorithms Comparison.ipynb        # Complete implementation, EDA, GPU training, and comparisons
+│   ├── Lab_Assignment_02_Report.docx                 # Formal academic lab report documentation
+│   └── Lab_Assignment_02_Report.md                   # Full report with theoretical derivations, manual hand traces & benchmarks
 │
 ├── LICENSE                             # MIT License
 └── README.md                           # Repository documentation
@@ -208,6 +215,27 @@ Computer-Vision-Labs/
 
 ---
 
+### Lab Assignment 02 (Lab 10): Comparative Implementation of ML Regression Algorithms
+- **Objective:** Mathematically formulate, trace manual step-by-step calculations on sample micro-subsets, and empirically benchmark six classical and modern machine learning regression paradigms on continuous salary estimation.
+- **Algorithms Analyzed:**
+  - **Linear Regression:** Ordinary Least Squares (OLS) closed-form normal equations ($\mathbf{w} = (\mathbf{X}^T\mathbf{X})^{-1}\mathbf{X}^Ty$) and gradient formulations with feature standardization.
+  - **Decision Tree Regression:** CART algorithm recursively finding binary split thresholds that maximize MSE impurity reduction; leaf values evaluated as local target means.
+  - **Random Forest Regression:** Bagging ensemble of 300 de-correlated decision trees (max depth 3, min samples leaf 1) with bootstrap aggregation.
+  - **Neural Network (MLP):** PyTorch deep neural regressor ($1 \to 64 \to 32 \to 1$ architecture with ReLU activations, Adam optimizer with weight decay, cosine annealing learning rate scheduler over 1,500 epochs trained on CUDA GPU).
+  - **XGBoost:** Gradient boosted decision trees using second-order Taylor expansion approximations (exact gradient $g_i$ and Hessian $h_i$ formulations) trained on CUDA GPU.
+  - **K-Nearest Neighbors (KNN):** Non-parametric instance-based regression ($k=6$, Euclidean distance, inverse distance weighting) on standardized feature spaces.
+- **Experimental Design & Rigor:**
+  - Strict 80:20 train/test split (24 training samples, 6 test samples, `random_state = 42`).
+  - Strict zero data leakage: feature scaling fit strictly on training splits.
+  - Hyperparameter optimization via 5-fold cross-validation grid search (`GridSearchCV`) on training data.
+  - Manual step-by-step mathematical calculations and traces worked out by hand for each algorithm.
+- **Key Findings:**
+  - **Linear Regression Ranked #1 on Test Set:** Achieved lowest MAE (6,286.45), lowest MSE ($49.83 \times 10^6$), lowest RMSE (7,059.04), and highest $R^2$ (**0.9024**). Because the true underlying relationship between experience and salary is strongly linear ($r = 0.9782$), low-variance linear models excel on small datasets without risk of overfitting.
+  - **Tree Discretization vs. Smooth Curves:** Decision trees and tree-ensembles partition continuous 1D space into orthogonal step functions, causing higher boundary error and inability to extrapolate beyond training ranges.
+  - **5-Fold Cross-Validation Consensus:** Random Forest scored lowest average CV RMSE (5,327.41, CV $R^2 = 0.9262$) closely followed by Linear Regression (5,694.82, CV $R^2 = 0.9224$), confirming both models perform exceptionally well within noise margins.
+
+---
+
 ## 📊 Key Empirical Results
 
 ### Filter Benchmark Summary (Lab 02 — Test Set)
@@ -258,6 +286,17 @@ Computer-Vision-Labs/
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
 | **HOG + Linear SVM** | 1,764 | **78.33** | **78.27** | 72.50 | **66.67** | **-5.83** | 25.00 | -47.50 |
 | **Dense SIFT + Linear SVM** | 2,048 | 75.00 | 75.23 | **79.17** | 45.83 | -33.34 | **81.67** | **+2.50** |
+
+### Regression Benchmark Summary (Lab Assignment 02 / Lab 10)
+
+| Rank | Regression Algorithm | Optimal Parameters / Architecture | Test MAE | Test MSE | Test RMSE | Test $R^2$ | 5-Fold CV RMSE | 5-Fold CV $R^2$ |
+| :---: | :--- | :--- | ---: | ---: | ---: | ---: | ---: | ---: |
+| **1** | **Linear Regression** | OLS + StandardScaler | **6,286.45** | **49,830,097** | **7,059.04** | **0.9024** | 5,694.82 | 0.9224 |
+| **2** | **Random Forest** | $n=300$, max depth $=3$, min leaf $=1$ | 6,563.44 | 59,801,030 | 7,733.11 | 0.8829 | **5,327.41** | **0.9262** |
+| **3** | **Neural Network (MLP)** | $1 \to 64 \to 32 \to 1$, ReLU, Adam (GPU) | 6,662.58 | 61,383,084 | 7,834.74 | 0.8798 | 6,928.47 | 0.8985 |
+| **4** | **K-Nearest Neighbors (KNN)** | $k=6$, weights $=$ distance | 6,905.99 | 65,979,671 | 8,122.79 | 0.8708 | 6,013.87 | 0.9062 |
+| **5** | **XGBoost** | $n=100$, max depth $=2$, $\eta=0.05$ (GPU) | 7,976.01 | 94,891,072 | 9,741.20 | 0.8142 | 6,490.49 | 0.8910 |
+| **6** | **Decision Tree** | CART, max depth $=$ None, min leaf $=1$ | 8,640.17 | 101,047,710 | 10,052.25 | 0.8022 | 6,822.62 | 0.8779 |
 
 ---
 
@@ -311,7 +350,7 @@ pip install torch torchvision opencv-python numpy pandas matplotlib seaborn scik
 ```bash
 jupyter notebook
 ```
-Navigate to any lab folder (`CV Lab 01`, `CV Lab 02`, `CV Lab 03`, `Lab Assignment 01_CV Lab 04`, `CV Lab 05`, `CV Lab 06`, `CV Lab 07`, or `CV Lab Mid`) and execute the respective `.ipynb` notebook.
+Navigate to any lab folder (`CV Lab 01`, `CV Lab 02`, `CV Lab 03`, `Lab Assignment 01_CV Lab 04`, `CV Lab 05`, `CV Lab 06`, `CV Lab 07`, `CV Lab Mid`, or `Lab Assignment 02_CV Lab 10`) and execute the respective `.ipynb` notebook.
 
 ### 6. Run the Real-Time Quality Inspection Prototype (Lab 05 Bonus)
 ```bash
